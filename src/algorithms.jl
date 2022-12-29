@@ -72,6 +72,18 @@ Can handle all forms of noise, including non-diagonal, scalar, and colored noise
 struct SimplifiedEM <: StochasticDiffEqAlgorithm end
 
 """
+Roberts, A.J., Modify the Improved Euler scheme to integrate stochasstic differential equations, arXiv: 1210.0933
+
+ImprovedEuler: Nonstiff Method
+
+Defaults to solving the Ito provlem, but ImproveDEuler
+Can handle all forms of noise, including non-diagonal, scalar, and colored noise.
+Fixed time step only
+"""
+struct ImprovedEuler{interpretation} <: StochasticDiffEqAlgorithm end
+ImprovedEuler(;interpretation=:Ito) = ImprovedEuler{interpretation}()
+
+"""
 Kloeden, P.E., Platen, E., Numerical Solution of Stochastic Differential Equations.
 Springer. Berlin Heidelberg (2011)
 
@@ -93,7 +105,7 @@ Defaults to solving the Ito problem, but RKMilCommute(interpretation=:Stratonovi
 Uses a 1.5/2.0 error estimate for adaptive time stepping.
 Default: ii_approx=IICommutative() does not approximate the Levy area.
 """
-struct RKMilCommute{T} <: StochasticDiffEqAdaptiveAlgorithm 
+struct RKMilCommute{T} <: StochasticDiffEqAdaptiveAlgorithm
   interpretation::Symbol
   ii_approx::T
 end

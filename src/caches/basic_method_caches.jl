@@ -128,6 +128,17 @@ function alg_cache(alg::SimplifiedEM,prob,u,ΔW,ΔZ,p,rate_prototype,noise_rate_
   SimplifiedEMCache(u,uprev,_dW, rtmp1,rtmp2)
 end
 
+struct ImprovedEulerConstantCache <: StochasticDiffEqConstantCache end
+@cache struct ImprovedEulerCache{uType,rateType,rateNoiseType} <: StochasticDiffEqMutableCache
+  u::uType
+  uprev::uType
+  rtmp::rateType
+  wtmp::rateNoiseType
+  Ktmp1::uType
+  Ktmp2::uType
+  Stmp::Int8 # TODO: use bool
+end
+
 
 struct RKMilConstantCache <: StochasticDiffEqConstantCache end
 @cache struct RKMilCache{uType,rateType} <: StochasticDiffEqMutableCache
@@ -166,7 +177,7 @@ end
   tmp::uType
 end
 
-function alg_cache(alg::RKMilCommute,prob,u,ΔW,ΔZ,p,rate_prototype,noise_rate_prototype,jump_rate_prototype,::Type{uEltypeNoUnits},::Type{uBottomEltypeNoUnits},::Type{tTypeNoUnits},uprev,f,t,dt,::Type{Val{false}}) where {uEltypeNoUnits,uBottomEltypeNoUnits,tTypeNoUnits} 
+function alg_cache(alg::RKMilCommute,prob,u,ΔW,ΔZ,p,rate_prototype,noise_rate_prototype,jump_rate_prototype,::Type{uEltypeNoUnits},::Type{uBottomEltypeNoUnits},::Type{tTypeNoUnits},uprev,f,t,dt,::Type{Val{false}}) where {uEltypeNoUnits,uBottomEltypeNoUnits,tTypeNoUnits}
   Jalg = get_Jalg(ΔW,dt,prob,alg)
   RKMilCommuteConstantCache{typeof(Jalg)}(Jalg)
 end

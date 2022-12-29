@@ -20,6 +20,8 @@ sim  = test_convergence(dts,prob,ISSEM(nlsolve=StochasticDiffEq.NLFunctional()),
 @test abs(sim.𝒪est[:l2]-.5) < 0.2
 sim  = test_convergence(dts,prob,LambaEM(),trajectories=Int(1e2))
 @test abs(sim.𝒪est[:l2]-.5) < 0.2
+sim = test_convergence(dts,prob,ImprovedEuler(),trajectories=Int(1e2))
+@test abs(sim.𝒪est[:l2]-1) < 0.2
 sim2 = test_convergence(dts,prob,RKMil(),trajectories=Int(2e2))
 @test abs(sim2.𝒪est[:l∞]-1) < 0.2
 sim2 = test_convergence(dts,prob,RKMilCommute(),trajectories=Int(2e2))
