@@ -128,6 +128,16 @@ function alg_cache(alg::SimplifiedEM,prob,u,ΔW,ΔZ,p,rate_prototype,noise_rate_
   SimplifiedEMCache(u,uprev,_dW, rtmp1,rtmp2)
 end
 
+struct ImprovedEulerConstantCache <: StochasticDiffEqConstantCache end
+@cache struct ImprovedEulerCache{uType,rateType,rateNoiseType} <: StochasticDiffEqMutableCache
+  u::uType
+  uprev::uType
+  rtmp::rateType
+  wtmp::rateNoiseType
+  Ktmp1::uType
+  Ktmp2::uType
+  Stmp::Int8 # TODO: use bool
+end
 
 struct RKMilConstantCache <: StochasticDiffEqConstantCache end
 @cache struct RKMilCache{uType,rateType} <: StochasticDiffEqMutableCache

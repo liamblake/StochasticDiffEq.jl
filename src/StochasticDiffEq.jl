@@ -158,7 +158,7 @@ end
 
   export SIEA, SMEA, SIEB, SMEB
 
-  export EulerHeun, LambaEulerHeun
+  export EulerHeun, LambaEulerHeun, ImprovedEuler
 
   export SimplifiedEM
 

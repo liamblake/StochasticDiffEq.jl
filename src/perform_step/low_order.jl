@@ -201,6 +201,49 @@ end
   end
 end
 
+@muladd function perform_step!(integrator, cache::ImprovedEulerConstantCache)
+  @unpack t, dt, uprev, u, W, p, f = integrator
+
+  S = if alg_interpretation(integrator.alg) == :Ito rand([-1, 1]) elseif alg_interpretation(integrator.alg) == :Stratonovich 0 else error("Alg interpretation invalid. Use either :Ito or :Stratonovich") end
+
+  if !is_diagonal_noise(integrator.sol.prob) || typeof(W.dW) <: Number
+    K1 = dt .* integrator.f(uprev, p, t) .+ integrator.g(uprev, p, t) * (W.dW .- S * sqrt(dt))
+    K2 = dt .* integrator.f(uprev .+ K1, p, t + dt) .+ integrator.g(uprev .+ K1, p, t + dt) * (W.dW .+ S * sqrt(dt))
+  else
+    K1 = dt .* integrator.f(uprev, p, t) .+ integrator.g(uprev, p, t) .* (W.dW .- S * sqrt(dt))
+    K2 = dt .* integrator.f(uprev .+ K1, p, t + dt) .+ integrator.g(uprev .+ K1, p, t + dt) .* (W.dW .+ S * sqrt(dt))
+  end
+
+  @.. u = uprev + 0.5 * (K1 + K2)
+  integrator.u = u
+end
+
+@muladd function perform_step!(integrator, cache::ImprovedEulerCache)
+  @unpack u, uprev, rtmp, wtmp, Ktmp1, Ktmp2, Stmp = cache
+  @unpack t, dt, uprev, u, W, p = integrator
+
+  integrator.f(rtmp, uprev, p, t)
+  integrator.g(wtmp, uprev, p, t)
+  Stmp .= if alg_interpretation(integrator.alg) == :Ito rand([-1,1]) elseif alg_interpretation(integrator.alg) == :Stratonovich 0 else error("Alg interpretation invalid. Use either :Ito or :Stratonovich") end
+
+  if !is_diagonal_noise(integrator.sol.prob)
+    Ktmp1 .= dt .* rtmp .+ wtmp * (W.dW - Stmp * sqrt(dt))
+    integrator.f(rtmp, uprev + Ktmp1, p, t + dt)
+    integrator.g(wtmp, uprev + Ktmp1, p, t + dt)
+    Ktmp2 .= dt .* rtmp .+ wtmp * (W.dW + Stmp * sqrt(dt))
+
+  else
+    Ktmp1 .= dt .* rtmp .+ wtmp .* (W.dW - Stmp * sqrt(dt))
+    integrator.f(rtmp, uprev + Ktmp1, p, t + dt)
+    integrator.g(wtmp, uprev + Ktmp1, p, t + dt)
+    Ktmp2 .= dt .* rtmp .+ wtmp .* (W.dW + Stmp * sqrt(dt))
+
+  end
+
+  u += 0.5 * (Ktmp1 + Ktmp2)
+
+end
+
 
 @muladd function perform_step!(integrator,cache::RKMilConstantCache)
   @unpack t,dt,uprev,u,W,p,f = integrator
