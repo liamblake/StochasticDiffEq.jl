@@ -10,6 +10,9 @@ sim  = test_convergence(dts,prob,EulerHeun(),trajectories=Int(5e2))
 sim  = test_convergence(dts,prob,LambaEulerHeun(),trajectories=Int(5e2))
 @test abs(sim.𝒪est[:l2]-1) < 0.1
 
+sim  = test_convergence(dts,prob,ImprovedEuler(interpretation=:Stratonovich),trajectories=Int(5e2))
+@test abs(sim.𝒪est[:l2]-1) < 0.1
+
 sim  = test_convergence(dts,prob,ISSEulerHeun(),trajectories=Int(5e2))
 @test abs(sim.𝒪est[:l2]-1) < 0.1
 
@@ -45,6 +48,9 @@ sim  = test_convergence(dts,prob,EulerHeun(),trajectories=Int(5e1))
 @test abs(sim.𝒪est[:l2]-1) < 0.1
 
 sim  = test_convergence(dts,prob,LambaEulerHeun(),trajectories=Int(5e1))
+@test abs(sim.𝒪est[:l2]-1) < 0.1
+
+sim  = test_convergence(dts,prob,ImprovedEuler(interpretation=:Stratonovich),trajectories=Int(5e1))
 @test abs(sim.𝒪est[:l2]-1) < 0.1
 
 sim  = test_convergence(dts,prob,ISSEulerHeun(),trajectories=Int(5e1))

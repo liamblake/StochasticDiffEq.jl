@@ -8,6 +8,7 @@ println("Solve and Plot")
 sol = solve(prob,EM(),dt=1/2^(3))
 sol = solve(prob,LambaEM(),dt=1/2^(3))
 sol = solve(prob,LambaEulerHeun(),dt=1/2^(3))
+sol = solve(prob,ImprovedEuler(),dt=1/2^(3))
 sol = solve(prob,RKMil(),dt=1/2^(3))
 sol = solve(prob,RKMilCommute(),dt=1/2^(3))
 sol = solve(prob,RKMilGeneral(),dt=1/2^(3))
@@ -56,6 +57,9 @@ sim = test_convergence(dts,prob,ImplicitEM(symplectic=true,autodiff=false),traje
 
 sim = test_convergence(dts,prob,ISSEM(),trajectories=500)
 @test abs(sim.𝒪est[:l2]-.5) < 0.1
+
+sim = test_convergence(dts,prob,ImprovedEuler(),trajectories=100)
+@test abs(sim.𝒪est[:l2]-1) < 0.1
 
 sim = test_convergence(dts,prob,ImplicitRKMil(),trajectories=100)
 @test abs(sim.𝒪est[:l2]-1) < 0.1
